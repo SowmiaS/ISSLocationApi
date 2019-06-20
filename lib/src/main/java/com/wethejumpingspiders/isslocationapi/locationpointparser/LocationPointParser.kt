@@ -1,4 +1,4 @@
-package com.wethejumpingspiders.isslocationapi
+package com.wethejumpingspiders.isslocationapi.locationpointparser
 
 class LocationPointParser {
 
