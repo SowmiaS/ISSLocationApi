@@ -1,16 +1,50 @@
 package com.wethejumpingspiders.isslocationapi.locationpointparser
 
+import android.util.Log
+import com.wethejumpingspiders.isslocationapi.sightingsparser.Feed
+import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingRSSService
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+
 class LocationPointParser {
 
     private val delimeter = "],["
     private val prefix = "var addressPoints = [["
-    private val suffix = "]];"
+    private val suffix = "];"
+    val LOCATION_POINT_URL = "https://spotthestation.nasa.gov/js/"
 
-    fun parseLocationPoints(input: String): List<LocationPoint> {
-        return input.removePrefix(prefix).removeSuffix(suffix).split(delimeter)
-            .map { it -> getLocationPoint(it.trim()) }
+
+    fun getLocationPointsJS() {
+        val retrofit = Retrofit.Builder().baseUrl(LOCATION_POINT_URL)
+            .build()
+        val rssapi = retrofit.create(LocationPointJSService::class.java!!)
+        val call = rssapi.getLocationPoints()
+        val sightingList = ArrayList<String>();
+
+        call.enqueue(object : Callback<ResponseBody> {
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("ISSSightingDataParser", "onFailure")
+                //TODO : Need to handle this error case
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val feed = response.body()?.string()
+                    feed?.let { parseLocationPoints(it) }
+                }
+            }
+        })
     }
 
+    private fun parseLocationPoints(input: String): List<LocationPoint> {
+        return input.trim().removePrefix(prefix).removeSuffix(suffix).split(delimeter)
+            .map { it -> getLocationPoint(it.trim()) }
+    }
 
     private fun getLocationPoint(text: String): LocationPoint {
 
@@ -27,28 +61,18 @@ class LocationPointParser {
                     requestId3
                 )
             }
-            ?: throw IllegalArgumentException()
+            ?: throw IllegalArgumentException(text)
     }
 
 
     private fun getRegexString(): String {
-        val addressRegex = "(^'[A-Za-z\\\\s]+, [A-Za-z\\\\s]+')"
-        val locationNameRegex = "('[A-Za-z\\\\s]+')"
+        val addressRegex = "(^'[-.0-9A-Za-z _\\\\s]+, [-.A-Za-z _\\\\s]+')"
+        val locationNameRegex = "('[-.0-9A-Za-z _\\\\s]+')"
         val decimalRegex = "(-*\\d*\\.\\d+)"
         return "$addressRegex,$decimalRegex,$decimalRegex,$locationNameRegex,$locationNameRegex,$locationNameRegex";
     }
 
-    /***
-     * This method is just used for testing for time being. Need to be removed later
-     */
-    private fun testLocationPointsParser() {
-        val locationpoint = "'Kabul, Afghanistan',34.5553494,69.2074860,'None','Afghanistan','Kabul'"
-        val locationpoint2 = "'Tirana, Albania',41.3275459,19.8186982,'None','Albania','Tirana'"
-        val locationpoint3 = "'Algiers, Algeria',36.7537703,3.0587927,'None','Algeria','Algiers'"
 
-        val values = prefix + locationpoint + delimeter + locationpoint2 + delimeter + locationpoint3 + suffix
-        parseLocationPoints(values)
-    }
 }
 
 data class LocationPoint(
