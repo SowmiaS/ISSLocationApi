@@ -1,6 +1,8 @@
 package com.wethejumpingspiders.isslocationapi.locationpointparser
 
 import android.util.Log
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.wethejumpingspiders.isslocationapi.sightingsparser.Feed
 import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingRSSService
 import okhttp3.ResponseBody
@@ -15,33 +17,9 @@ class LocationPointParser {
     private val delimeter = "],["
     private val prefix = "var addressPoints = [["
     private val suffix = "];"
-    val LOCATION_POINT_URL = "https://spotthestation.nasa.gov/js/"
 
 
-    fun getLocationPointsJS() {
-        val retrofit = Retrofit.Builder().baseUrl(LOCATION_POINT_URL)
-            .build()
-        val rssapi = retrofit.create(LocationPointJSService::class.java!!)
-        val call = rssapi.getLocationPoints()
-        val sightingList = ArrayList<String>();
-
-        call.enqueue(object : Callback<ResponseBody> {
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.d("ISSSightingDataParser", "onFailure")
-                //TODO : Need to handle this error case
-            }
-
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.isSuccessful) {
-                    val feed = response.body()?.string()
-                    feed?.let { parseLocationPoints(it) }
-                }
-            }
-        })
-    }
-
-    private fun parseLocationPoints(input: String): List<LocationPoint> {
+    fun parseLocationPoints(input: String): List<LocationPoint> {
         return input.trim().removePrefix(prefix).removeSuffix(suffix).split(delimeter)
             .map { it -> getLocationPoint(it.trim()) }
     }
@@ -53,9 +31,10 @@ class LocationPointParser {
             ?.destructured
             ?.let { (name, latitude, longitude, requestId1, requestId2, requestId3) ->
                 LocationPoint(
+                    0L,
                     name,
-                    latitude,
-                    longitude,
+                    latitude.toFloat(),
+                    longitude.toFloat(),
                     requestId1,
                     requestId2,
                     requestId3
@@ -75,13 +54,16 @@ class LocationPointParser {
 
 }
 
+@Entity
 data class LocationPoint(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long,
     val name: String,
-    val latitude: String,
-    val longitude: String,
-    val requestid1: String,
-    val requestid2: String,
-    val requestid3: String
+    val latitude: Float,
+    val longitude: Float,
+    val region: String,
+    val country: String,
+    val city: String
 )
 
 

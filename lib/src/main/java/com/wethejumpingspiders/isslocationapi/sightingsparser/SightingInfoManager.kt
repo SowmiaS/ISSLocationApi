@@ -1,11 +1,14 @@
 package com.wethejumpingspiders.isslocationapi.sightingsparser
 
+import android.content.Context
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
+import com.wethejumpingspiders.isslocationapi.sightingsparser.room.SightingInfoDatabaseHelper
 import java.util.*
 
 interface SightingInfoManagerInterface {
 
     fun getSightingInfo(locationPoint: LocationPoint, listener: OnSightingInfoResponse)
+
 }
 
 /**
@@ -15,7 +18,7 @@ interface OnSightingInfoResponse {
     /**
      * This method is called when sighting information is retrieved or modified
      */
-    fun onSightingInfoChanged(sightingInfos: ArrayList<SightingInfo>)
+    fun onSightingInfoChanged(sightingInfos: List<SightingInfo>)
 
     /**
      * This method is called when any failure occurs.
@@ -23,10 +26,18 @@ interface OnSightingInfoResponse {
     fun onFailure(errorMsg: String)
 }
 
-class SightingInfoManager : SightingInfoManagerInterface {
+class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
+
+    val databaseHelper = SightingInfoDatabaseHelper(context)
+    val parser = ISSSightingDataParser()
+
 
     override fun getSightingInfo(locationPoint: LocationPoint, listener: OnSightingInfoResponse) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        databaseHelper.getSightingInfosForLocation(locationPoint.id)?.let {
+            val sightingInfos = parser.getSightingInfos(locationPoint)
+            listener.onSightingInfoChanged(sightingInfos)
+            databaseHelper.addAllSightingInfos(sightingInfos)
+        }
     }
 
 }

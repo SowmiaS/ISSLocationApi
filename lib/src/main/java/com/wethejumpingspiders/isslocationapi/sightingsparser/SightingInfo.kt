@@ -1,5 +1,16 @@
 package com.wethejumpingspiders.isslocationapi.sightingsparser
 
-class SightingInfo{
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 
-}
+@Entity(foreignKeys = arrayOf(ForeignKey(
+    entity = LocationPoint::class,
+    parentColumns = arrayOf("id"),
+    childColumns = arrayOf("locationPointId"))
+)
+)
+data class SightingInfo(
+    val date: String, val time: String, val duration: String, val maxElevation: String,
+    val approach: String, val departure: String, val locationPointId: Long
+)

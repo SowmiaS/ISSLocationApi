@@ -1,34 +1,58 @@
 package com.wethejumpingspiders.isslocationapi.locationpointparser
 
+import android.content.Context
+import com.wethejumpingspiders.isslocationapi.locationpointparser.room.LocationPointsDatabaseHelper
+import kotlin.collections.ArrayList
 
-interface  LocationPointManagerInterface{
 
-    fun downloadLocationPoints() : ArrayList<LocationPoint>
-    fun storeLocationPointsInRoom( locationPoints: ArrayList<LocationPoint>)
-    fun getAllLocationPoints()
-    fun getMatchedLocationPoints()
+interface LocationPointManagerInterface {
+
+    fun downloadLocationPoints(listener: OnLocationPointDownload)
+    fun storeLocationPointsInRoom(locationPoints: List<LocationPoint>)
+    fun getAllLocationPoints(): List<LocationPoint>?
+    fun getMatchedLocationPoint(latitude: Float, longitude: Float): LocationPoint?
 
 }
 
+interface OnLocationPointDownload {
 
-class LocationPointManager : LocationPointManagerInterface{
+    fun onLocationPointChanged(locationPoints: List<LocationPoint>)
+    fun onFailure(t: Throwable)
+}
 
+class LocationPointManager(val context: Context) : LocationPointManagerInterface, LocationPointDownloaderInterface {
 
-    override fun downloadLocationPoints(): ArrayList<LocationPoint> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    val databaseHelper = LocationPointsDatabaseHelper(context)
+    val downloader = LocationPointDownloader()
+    val matcher = LocationPointMatcher(context, databaseHelper)
+    val parser = LocationPointParser()
+
+    var listener: OnLocationPointDownload? = null;
+
+    override fun downloadLocationPoints(listener: OnLocationPointDownload) {
+        this.listener = listener
+        databaseHelper.deleteAllLocationPoints()
+        downloader.getLocationPointsJS(this)
     }
 
-    override fun storeLocationPointsInRoom(locationPoints: ArrayList<LocationPoint>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun storeLocationPointsInRoom(locationPoints: List<LocationPoint>) {
+        databaseHelper.addAllLocationPoints(locationPoints)
     }
 
-    override fun getAllLocationPoints() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getAllLocationPoints(): List<LocationPoint>? {
+        return databaseHelper.getAllLocationPoints()
     }
 
-    override fun getMatchedLocationPoints() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getMatchedLocationPoint(latitude: Float, longitude: Float): LocationPoint? {
+        return matcher.getClosestLocationPoint(latitude, longitude)
     }
 
 
+    override fun onSuccess(feed: String) {
+        listener?.onLocationPointChanged(parser.parseLocationPoints(feed))
+    }
+
+    override fun onFailure(t: Throwable) {
+        listener?.onFailure(t)
+    }
 }
