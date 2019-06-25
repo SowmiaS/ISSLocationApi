@@ -13,15 +13,15 @@ interface LocationPointDao {
     fun getAll(): List<LocationPoint>
 
     @Query("SELECT * FROM LocationPoint WHERE country= :countryName" )
-    fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
+     fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
 
     @Insert
-    fun insertAll(vararg locationPoint: List<LocationPoint>)
+     fun insertAll(locationPoint: List<LocationPoint>)
 
     @Delete
-    fun delete(locationPoint: LocationPoint)
+     fun delete(locationPoint: LocationPoint)
 
     @Query("DELETE FROM LocationPoint")
-    fun deleteAll()
+     fun deleteAll()
 
 }

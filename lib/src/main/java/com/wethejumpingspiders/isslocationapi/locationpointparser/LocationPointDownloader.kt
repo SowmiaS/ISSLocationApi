@@ -15,9 +15,8 @@ class LocationPointDownloader {
     fun getLocationPointsJS(listener: LocationPointDownloaderInterface) {
         val retrofit = Retrofit.Builder().baseUrl(LOCATION_POINT_URL)
             .build()
-        val rssapi = retrofit.create(LocationPointJSService::class.java!!)
+        val rssapi = retrofit.create(LocationPointJSService::class.java)
         val call = rssapi.getLocationPoints()
-        val sightingList = ArrayList<String>();
 
         call.enqueue(object : Callback<ResponseBody> {
 

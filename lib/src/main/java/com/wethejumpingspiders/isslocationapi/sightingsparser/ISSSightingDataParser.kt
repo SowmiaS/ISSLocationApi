@@ -26,7 +26,7 @@ class ISSSightingDataParser() {
         val retrofit = Retrofit.Builder().baseUrl(RSSFEEDURL)
             .addConverterFactory(create())
             .build()
-        val rssapi = retrofit.create(SightingRSSService::class.java!!)
+        val rssapi = retrofit.create(SightingRSSService::class.java)
         val call = rssapi.getFeed(locationPoint.region, locationPoint.country, locationPoint.city)
         val sightingList = ArrayList<String>();
 
@@ -66,7 +66,7 @@ class ISSSightingDataParser() {
             val duration = desc.component3().removePrefix("Duration:")
             val maxElevation = desc.component4().removePrefix("Maximum Elevation:")
             val approach = desc.component5().removePrefix("Approach:")
-            val sightingInfo: SightingInfo = SightingInfo(date, time, duration, maxElevation, approach, "",locationPoint.id)
+            val sightingInfo: SightingInfo = SightingInfo(0,date, time, duration, maxElevation, approach, "",locationPoint.id)
             sightingInfoList.add(sightingInfo)
         }
         return sightingInfoList

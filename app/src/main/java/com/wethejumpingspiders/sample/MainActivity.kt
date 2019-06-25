@@ -1,7 +1,7 @@
-package com.wethejumpingspiders.isslocationapi
+package com.wethejumpingspiders.sample
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.wethejumpingspiders.isslocationapi.api.ISSLocator
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPointParser

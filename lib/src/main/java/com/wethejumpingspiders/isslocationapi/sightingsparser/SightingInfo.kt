@@ -2,6 +2,7 @@ package com.wethejumpingspiders.isslocationapi.sightingsparser
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 
 @Entity(foreignKeys = arrayOf(ForeignKey(
@@ -11,6 +12,8 @@ import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 )
 )
 data class SightingInfo(
+    @PrimaryKey(autoGenerate = true)
+    val id:Long = 0,
     val date: String, val time: String, val duration: String, val maxElevation: String,
     val approach: String, val departure: String, val locationPointId: Long
 )
