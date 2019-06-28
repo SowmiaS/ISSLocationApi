@@ -1,10 +1,13 @@
 package com.wethejumpingspiders.isslocationapi.locationpointparser
 
 import android.util.Log
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.wethejumpingspiders.isslocationapi.sightingsparser.Feed
 import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingRSSService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -15,31 +18,34 @@ class LocationPointParser {
 
     private val delimeter = "],["
     private val prefix = "var addressPoints = [["
-    private val suffix = "];"
+    private val suffix = "]];"
+    private val locationSurroundingDelimeter = "'"
 
 
-    fun parseLocationPoints(input: String): List<LocationPoint> {
-        return input.trim().removePrefix(prefix).removeSuffix(suffix).split(delimeter)
-            .map { it -> getLocationPoint(it.trim()) }
+
+    suspend fun parseLocationPoints(input: String): List<LocationPoint>  {
+        return GlobalScope.async { input.trim().removePrefix(prefix).removeSuffix(suffix).split(delimeter)
+            .map { it -> getLocationPoint(it.trim()) }}.await()
     }
 
     private fun getLocationPoint(text: String): LocationPoint {
-
+        System.out.println(text)
         val regex = getRegexString().toRegex()
         return regex.matchEntire(text)
             ?.destructured
             ?.let { (name, latitude, longitude, requestId1, requestId2, requestId3) ->
                 LocationPoint(
-                    0L,
-                    name,
+                    0,
+                    name.removeSurrounding(locationSurroundingDelimeter).trim(),
                     latitude.toFloat(),
                     longitude.toFloat(),
-                    requestId1,
-                    requestId2,
-                    requestId3
+                    requestId1.removeSurrounding(locationSurroundingDelimeter).trim(),
+                    requestId2.removeSurrounding(locationSurroundingDelimeter).trim(),
+                    requestId3.removeSurrounding(locationSurroundingDelimeter).trim()
                 )
             }
-            ?: throw IllegalArgumentException(text)
+            ?:
+            throw IllegalArgumentException(text)
     }
 
 
@@ -53,14 +59,15 @@ class LocationPointParser {
 
 }
 
-@Entity
+@Entity (tableName = "locationpoint")
 data class LocationPoint(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Int,
     val name: String,
     val latitude: Float,
     val longitude: Float,
     val region: String,
+    @ColumnInfo(name = "country")
     val country: String,
     val city: String
 )

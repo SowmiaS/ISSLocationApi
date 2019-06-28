@@ -9,11 +9,12 @@ import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 @Dao
 interface LocationPointDao {
 
-    @Query("SELECT * FROM LocationPoint")
+    @Query("SELECT * FROM locationpoint")
     fun getAll(): List<LocationPoint>
 
-    @Query("SELECT * FROM LocationPoint WHERE country= :countryName" )
-     fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
+
+    @Query("SELECT * FROM locationpoint WHERE country = :countryName" )
+    fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
 
     @Insert
      fun insertAll(locationPoint: List<LocationPoint>)
@@ -21,7 +22,7 @@ interface LocationPointDao {
     @Delete
      fun delete(locationPoint: LocationPoint)
 
-    @Query("DELETE FROM LocationPoint")
+    @Query("DELETE FROM locationpoint")
      fun deleteAll()
 
 }

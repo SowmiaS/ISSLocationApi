@@ -11,7 +11,7 @@ import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingInfo
 interface SightingInfoDao {
 
     @Query("SELECT * FROM SightingInfo WHERE locationPointId= :locationPointId")
-     fun getSightingInfosOfLocationPoint(locationPointId: Long): List<SightingInfo>
+     fun getSightingInfosOfLocationPoint(locationPointId: Int): List<SightingInfo>
 
     @Insert
      fun insertAll(sightingInfos: List<SightingInfo>)

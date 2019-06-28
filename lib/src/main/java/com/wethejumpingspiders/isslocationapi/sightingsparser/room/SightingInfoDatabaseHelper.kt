@@ -14,7 +14,7 @@ class SightingInfoDatabaseHelper(val context: Context) {
     }
 
 
-    fun getSightingInfosForLocation(locationId: Long): List<SightingInfo>? {
+    fun getSightingInfosForLocation(locationId: Int): List<SightingInfo>? {
         return getDatabase(context).sightingInfoDao().getSightingInfosOfLocationPoint(locationId)
     }
 }

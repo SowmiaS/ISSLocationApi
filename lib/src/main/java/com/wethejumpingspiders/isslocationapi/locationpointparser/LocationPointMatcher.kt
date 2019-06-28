@@ -7,7 +7,7 @@ import com.wethejumpingspiders.isslocationapi.locationpointparser.room.LocationP
 
 class LocationPointMatcher(val context: Context, val databaseHelper: LocationPointsDatabaseHelper) {
 
-    fun getClosestLocationPoint(latitude: Float, longitude: Float): LocationPoint? {
+    suspend fun getClosestLocationPoint(latitude: Float, longitude: Float): LocationPoint? {
         val countryName = getCountryName(latitude, longitude)
         val locationPointsList: List<LocationPoint>? = getLocationPointsForCountry(countryName)
         val distanceArray = mapDistance(latitude, longitude, locationPointsList)
@@ -20,20 +20,20 @@ class LocationPointMatcher(val context: Context, val databaseHelper: LocationPoi
         return addresses.get(0).countryName
     }
 
-    private fun getLocationPointsForCountry(countryName: String): List<LocationPoint>? {
-        return databaseHelper.getAllLocationPoints(countryName)
+    private suspend fun getLocationPointsForCountry(countryName: String): List<LocationPoint>? {
+        return databaseHelper.getAllLocationPointsForCountry(countryName)
     }
 
-    private fun mapDistance(latitude: Float, longitude: Float, locationPoints: List<LocationPoint>?): Array<Double>? {
+    private fun mapDistance(latitude: Float, longitude: Float, locationPoints: List<LocationPoint>?): List<Double>? {
         locationPoints?.let {
-            val locationPointsArr: Array<Double> = arrayOf<Double>()
+            val locationPointsArr: ArrayList<Double> = arrayListOf<Double>()
             for ((index, locationPoint) in locationPoints.withIndex()) {
-                locationPointsArr[index] = distance(
+                locationPointsArr.add(distance(
                     latitude.toDouble(),
                     longitude.toDouble(),
                     locationPoint.latitude.toDouble(),
                     locationPoint.longitude.toDouble()
-                )
+                ))
             }
             return locationPointsArr
         }
@@ -41,7 +41,7 @@ class LocationPointMatcher(val context: Context, val databaseHelper: LocationPoi
     }
 
     private fun findClosestLocationPoint(
-        distanceArray: Array<Double>?,
+        distanceArray: List<Double>?,
         locationPoints: List<LocationPoint>?
     ): LocationPoint? {
         val minValueIndex = distanceArray?.indexOf(distanceArray.min())

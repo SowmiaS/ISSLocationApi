@@ -9,7 +9,7 @@ import com.wethejumpingspiders.isslocationapi.locationpointparser.room.LocationP
 import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingInfo
 import com.wethejumpingspiders.isslocationapi.sightingsparser.room.SightingInfoDao
 
-@Database(entities = arrayOf(LocationPoint::class, SightingInfo::class), version = 1)
+@Database(entities = arrayOf(LocationPoint::class, SightingInfo::class), version = 2)
 abstract class ISSLocatorDatabase : RoomDatabase() {
 
     abstract fun locationPointDao(): LocationPointDao
@@ -24,7 +24,7 @@ fun getDatabase(context: Context) : ISSLocatorDatabase {
     database = database ?: Room.databaseBuilder(
         context,
         ISSLocatorDatabase::class.java, databaseName
-    ).build()
+    ).fallbackToDestructiveMigration().build()
     return database as ISSLocatorDatabase
 }
 

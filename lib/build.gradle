@@ -42,9 +42,13 @@ dependencies {
         exclude group: 'stax', module: 'stax'
     }
     def room_version = "2.1.0"
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-coroutines:2.1.0-alpha04"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M2"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0-M2'
+
     kapt "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"

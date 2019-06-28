@@ -33,7 +33,8 @@ class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
 
 
     override fun getSightingInfo(locationPoint: LocationPoint, listener: OnSightingInfoResponse) {
-        databaseHelper.getSightingInfosForLocation(locationPoint.id)?.let {
+        databaseHelper.getSightingInfosForLocation(
+            locationPoint.id)?.let {
             val sightingInfos = parser.getSightingInfos(locationPoint)
             listener.onSightingInfoChanged(sightingInfos)
             databaseHelper.addAllSightingInfos(sightingInfos)
