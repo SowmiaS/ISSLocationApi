@@ -7,7 +7,7 @@ import java.util.*
 
 interface SightingInfoManagerInterface {
 
-    fun getSightingInfo(locationPoint: LocationPoint, listener: OnSightingInfoResponse)
+    suspend fun getSightingInfo(locationPoint: LocationPoint ) :List<SightingInfo>
 
 }
 
@@ -18,7 +18,7 @@ interface OnSightingInfoResponse {
     /**
      * This method is called when sighting information is retrieved or modified
      */
-    fun onSightingInfoChanged(sightingInfos: List<SightingInfo>)
+     fun onSightingInfoChanged(sightingInfos: List<SightingInfo>)
 
     /**
      * This method is called when any failure occurs.
@@ -30,15 +30,24 @@ class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
 
     val databaseHelper = SightingInfoDatabaseHelper(context)
     val parser = ISSSightingDataParser()
+    val downloader = SightingInfoDownloader()
 
 
-    override fun getSightingInfo(locationPoint: LocationPoint, listener: OnSightingInfoResponse) {
-        databaseHelper.getSightingInfosForLocation(
-            locationPoint.id)?.let {
-            val sightingInfos = parser.getSightingInfos(locationPoint)
-            listener.onSightingInfoChanged(sightingInfos)
+    override suspend fun getSightingInfo(locationPoint: LocationPoint) : List<SightingInfo> {
+
+        var sightingInfos = databaseHelper.getSightingInfosForLocation(locationPoint.id)
+        if ( sightingInfos == null || sightingInfos.size == 0 ){
+            sightingInfos = getSightingInfos(locationPoint)
             databaseHelper.addAllSightingInfos(sightingInfos)
         }
+        return sightingInfos
     }
 
+
+    suspend fun getSightingInfos(locationPoint: LocationPoint): List<SightingInfo> {
+
+        val sightingInfoDescList = downloader.getSightingsDesc(locationPoint)
+        return parser.parseSightingInfos(locationPoint, sightingInfoDescList)
+
+    }
 }

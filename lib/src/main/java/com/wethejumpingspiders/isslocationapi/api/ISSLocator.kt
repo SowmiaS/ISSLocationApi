@@ -4,6 +4,7 @@ import android.content.Context
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPointManager
 import com.wethejumpingspiders.isslocationapi.sightingsparser.OnSightingInfoResponse
+import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingInfo
 import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingInfoManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -27,7 +28,7 @@ private interface ISSLocatorInterface {
     /**
      * This method retrieves the sighting information for the given location point and notifies to the listener.
      */
-    fun getSightingInformation(locationPoint: LocationPoint, listener: OnSightingInfoResponse)
+    suspend fun getSightingInformation(locationPoint: LocationPoint) : List<SightingInfo>
 
     /**
      * This method returns all location points for ISS Locator
@@ -68,8 +69,8 @@ class ISSLocator(val context: Context) : ISSLocatorInterface {
         return locationPointManager.getMatchedLocationPoint(latitude, longitue)
     }
 
-    override fun getSightingInformation(locationPoint: LocationPoint, listener: OnSightingInfoResponse) {
-        sightingInfoManager.getSightingInfo(locationPoint, listener)
+    override suspend fun getSightingInformation(locationPoint: LocationPoint) : List<SightingInfo> {
+        return sightingInfoManager.getSightingInfo(locationPoint)
     }
 }
 

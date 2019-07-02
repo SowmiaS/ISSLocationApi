@@ -12,6 +12,7 @@ import com.wethejumpingspiders.isslocationapi.api.ISSLocatorInitializationError
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPointParser
 import com.wethejumpingspiders.isslocationapi.sightingsparser.ISSSightingDataParser
+import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingInfo
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -37,10 +38,16 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Number of Location Points ", Toast.LENGTH_LONG).show()
 
 
-            val matchedLocationPoint = async { locator.getMatchedLocationPoint(11.2746f,77.5826f) }
+            val matchedLocationPoint = async { locator.getMatchedLocationPoint(17.0005f,81.8040f) }
             matchedLPTextview.setText(matchedLocationPoint.await()?.city)
 
+            val sightingInfos : List<SightingInfo>? = async { matchedLocationPoint.await()?.let {  locator.getSightingInformation(it) }}.await()
 
+            sightingInfos?.let {
+                for (sightingInfo in it) {
+                    System.out.println(sightingInfo)
+                }
+            }
         }
 
 

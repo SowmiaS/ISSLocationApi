@@ -10,7 +10,7 @@ import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingInfo
 @Dao
 interface SightingInfoDao {
 
-    @Query("SELECT * FROM SightingInfo WHERE locationPointId= :locationPointId")
+    @Query("SELECT * FROM SightingInfo WHERE locationPointId = :locationPointId")
      fun getSightingInfosOfLocationPoint(locationPointId: Int): List<SightingInfo>
 
     @Insert
