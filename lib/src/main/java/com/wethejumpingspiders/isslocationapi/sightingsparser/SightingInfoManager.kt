@@ -7,7 +7,7 @@ import java.util.*
 
 interface SightingInfoManagerInterface {
 
-    suspend fun getSightingInfo(locationPoint: LocationPoint ) :List<SightingInfo>
+    suspend fun getSightingInfo(locationPoint: LocationPoint ) :List<SightingInfo>?
 
 }
 
@@ -33,21 +33,25 @@ class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
     val downloader = SightingInfoDownloader()
 
 
-    override suspend fun getSightingInfo(locationPoint: LocationPoint) : List<SightingInfo> {
+    override suspend fun getSightingInfo(locationPoint: LocationPoint) : List<SightingInfo>? {
 
         var sightingInfos = databaseHelper.getSightingInfosForLocation(locationPoint.id)
         if ( sightingInfos == null || sightingInfos.size == 0 ){
             sightingInfos = getSightingInfos(locationPoint)
-            databaseHelper.addAllSightingInfos(sightingInfos)
+            sightingInfos?.let { databaseHelper.addAllSightingInfos(sightingInfos) }
         }
         return sightingInfos
     }
 
 
-    suspend fun getSightingInfos(locationPoint: LocationPoint): List<SightingInfo> {
+    suspend fun getSightingInfos(locationPoint: LocationPoint): List<SightingInfo>? {
 
         val sightingInfoDescList = downloader.getSightingsDesc(locationPoint)
-        return parser.parseSightingInfos(locationPoint, sightingInfoDescList)
+        if (sightingInfoDescList == null ) return null;
+        else {
+            return parser.parseSightingInfos(locationPoint, sightingInfoDescList)
+        }
+
 
     }
 }

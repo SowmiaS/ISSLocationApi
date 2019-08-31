@@ -18,8 +18,8 @@ class Feed() : Serializable {
 @Root(name = "channel", strict = false)
 class Channel() : Serializable {
 
-    @set:ElementList(name = "item", inline = true)
-    @get:ElementList(name = "item", inline = true)
+    @set:ElementList(name = "item", inline = true, empty = true, required = false)
+    @get:ElementList(name = "item", inline = true, empty = true, required = false)
     public var sightingItems: List<SightingItem>? = null
 
 }

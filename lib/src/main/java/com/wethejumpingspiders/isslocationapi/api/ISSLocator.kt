@@ -28,7 +28,7 @@ private interface ISSLocatorInterface {
     /**
      * This method retrieves the sighting information for the given location point and notifies to the listener.
      */
-    suspend fun getSightingInformation(locationPoint: LocationPoint) : List<SightingInfo>
+    suspend fun getSightingInformation(locationPoint: LocationPoint) : List<SightingInfo>?
 
     /**
      * This method returns all location points for ISS Locator
@@ -69,7 +69,7 @@ class ISSLocator(val context: Context) : ISSLocatorInterface {
         return locationPointManager.getMatchedLocationPoint(latitude, longitue)
     }
 
-    override suspend fun getSightingInformation(locationPoint: LocationPoint) : List<SightingInfo> {
+    override suspend fun getSightingInformation(locationPoint: LocationPoint) : List<SightingInfo>? {
         return sightingInfoManager.getSightingInfo(locationPoint)
     }
 }

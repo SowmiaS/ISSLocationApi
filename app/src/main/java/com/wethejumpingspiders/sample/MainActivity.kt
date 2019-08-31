@@ -33,23 +33,29 @@ class MainActivity : AppCompatActivity() {
         val locator = ISSLocator(applicationContext)
         GlobalScope.launch(Dispatchers.Main) {
             locator.intialise()
-            val locationPoints  = async{ locator.getAllLocationPoints() }
+            val locationPoints = async { locator.getAllLocationPoints() }
             locationPoints.await()?.get(0)?.country
             Toast.makeText(applicationContext, "Number of Location Points ", Toast.LENGTH_LONG).show()
 
 
-            val matchedLocationPoint = async { locator.getMatchedLocationPoint(17.0005f,81.8040f) }
+            val matchedLocationPoint = async { locator.getMatchedLocationPoint(11.0168f, 76.9558f) }
             matchedLPTextview.setText(matchedLocationPoint.await()?.city)
 
-            val sightingInfos : List<SightingInfo>? = async { matchedLocationPoint.await()?.let {  locator.getSightingInformation(it) }}.await()
-
-            sightingInfos?.let {
-                for (sightingInfo in it) {
-                    System.out.println(sightingInfo)
+            val sightingInfos: List<SightingInfo>? =
+                async { matchedLocationPoint.await()?.let { locator.getSightingInformation(it) } }.await()
+            if (sightingInfos == null) {
+                System.out.println("Error retriving SIGHTING INFO...")
+            } else if (sightingInfos.isEmpty()) {
+                System.out.println("NO SIGHTING INFO...")
+            }else {
+                sightingInfos?.let {
+                    for (sightingInfo in it) {
+                        System.out.println(sightingInfo)
+                    }
                 }
             }
-        }
 
+        }
 
 
     }

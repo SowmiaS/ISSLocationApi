@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface SightingRSSService {
 
-    @GET("indexrss.cfm")
+    @GET("indexrss1.cfm")
     suspend fun getFeed(@Query("country")  country : String,
                 @Query("region")  region : String,
                 @Query("city")  city : String
