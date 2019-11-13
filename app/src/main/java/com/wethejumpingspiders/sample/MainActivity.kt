@@ -51,14 +51,22 @@ class MainActivity : AppCompatActivity() {
                 sightingInfos?.let {
                     for (sightingInfo in it) {
                         System.out.println(sightingInfo)
+                        System.out.println("A APPEARS ${sightingInfo.getApproachData().degree} ,${sightingInfo.getApproachData().direction} , ${sightingInfo.getApproachData().string}")
+                        System.out.println("A DISAAPPEARS ${sightingInfo.getDepartureData().degree} ,${sightingInfo.getDepartureData().direction} , ${sightingInfo.getDepartureData().string}")
+                        System.out.println("A MAX ELEVATION ${sightingInfo.maxElevation}")
                     }
                 }
             }
-
+            val location = async { sightingInfos?.get(0)?.let { locator.getLocationForSighting(it) } }.await()
+            System.out.println("A APPEARS $location")
         }
 
 
     }
 
+    suspend fun ISSLocator.getLocationForSighting(info : SightingInfo) : String{
+        val locationPoint = getLocationPoint(info.id)
+        return "${locationPoint?.city}, ${locationPoint?.country}"
+    }
 
 }

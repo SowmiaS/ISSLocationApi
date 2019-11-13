@@ -13,6 +13,7 @@ interface LocationPointManagerInterface {
     suspend fun storeLocationPointsInRoom(locationPoints: List<LocationPoint>)
     suspend fun getAllLocationPoints(): List<LocationPoint>?
     suspend fun getMatchedLocationPoint(latitude: Float, longitude: Float): LocationPoint?
+    suspend fun getLocationPoint(id : Int) : LocationPoint?
 
 }
 
@@ -50,6 +51,7 @@ class LocationPointManager(val context: Context) : LocationPointManagerInterface
         return matcher.getClosestLocationPoint(latitude, longitude)
     }
 
-
-
+    override suspend fun getLocationPoint(id: Int) : LocationPoint? {
+        return databaseHelper.getLocationPoint(id)
+    }
 }

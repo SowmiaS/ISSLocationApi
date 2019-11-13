@@ -4,6 +4,9 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import com.wethejumpingspiders.isslocationapi.locationpointparser.room.LocationPointsDatabaseHelper
+import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 
 class LocationPointMatcher(val context: Context, val databaseHelper: LocationPointsDatabaseHelper) {
 
@@ -15,9 +18,27 @@ class LocationPointMatcher(val context: Context, val databaseHelper: LocationPoi
     }
 
     private fun getCountryName(latitude: Float, longitude: Float): String {
-        val geocoder: Geocoder = Geocoder(context)
-        val addresses: List<Address> = geocoder.getFromLocation(latitude.toDouble(), longitude.toDouble(), 1)
-        return addresses.get(0).countryName
+        val geocoder = Geocoder(context, Locale.getDefault())
+
+        var locationName: String? = null
+        val requestLimit = 6
+        var requestIndex = 0
+
+        while (locationName.isNullOrEmpty() && requestIndex < requestLimit) {
+            try {
+                requestIndex++
+                val addresses: List<Address> = geocoder.getFromLocation(latitude.toDouble(), longitude.toDouble(), 1)
+                if (addresses.size > 0) {
+                    val address = addresses[0]
+                    locationName = address.countryName
+                }
+            } catch (e: IOException) {
+                locationName = null
+            } catch (e: IllegalArgumentException) {
+                locationName = null
+            }
+        }
+        return locationName ?: ""
     }
 
     private suspend fun getLocationPointsForCountry(countryName: String): List<LocationPoint>? {

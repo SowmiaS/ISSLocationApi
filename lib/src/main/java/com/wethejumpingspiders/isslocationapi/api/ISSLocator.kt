@@ -35,6 +35,11 @@ private interface ISSLocatorInterface {
      */
     suspend fun getAllLocationPoints(): List<LocationPoint>?
 
+
+    /* This method returns location points for given ID
+    */
+    suspend fun getLocationPoint(id : Int): LocationPoint?
+
     /**
      * This method matches the given latitude and longitude with available ISS Location Points.
      */
@@ -71,6 +76,10 @@ class ISSLocator(val context: Context) : ISSLocatorInterface {
 
     override suspend fun getSightingInformation(locationPoint: LocationPoint) : List<SightingInfo>? {
         return sightingInfoManager.getSightingInfo(locationPoint)
+    }
+
+    override suspend fun getLocationPoint(id: Int): LocationPoint? {
+        return locationPointManager.getLocationPoint(id)
     }
 }
 

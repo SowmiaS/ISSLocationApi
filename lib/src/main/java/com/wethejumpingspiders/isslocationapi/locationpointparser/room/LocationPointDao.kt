@@ -16,6 +16,9 @@ interface LocationPointDao {
     @Query("SELECT * FROM locationpoint WHERE country = :countryName" )
     fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
 
+    @Query("SELECT * FROM locationpoint WHERE id = :id" )
+    fun getLocationPoint(id : Int): LocationPoint?
+
     @Insert
      fun insertAll(locationPoint: List<LocationPoint>)
 

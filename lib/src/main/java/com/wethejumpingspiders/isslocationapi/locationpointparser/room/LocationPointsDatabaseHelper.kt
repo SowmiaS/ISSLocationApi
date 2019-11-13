@@ -23,6 +23,12 @@ class LocationPointsDatabaseHelper(val context: Context) {
         }.await()
     }
 
+    suspend fun getLocationPoint(id : Int): LocationPoint? {
+        return GlobalScope.async{
+            getDatabase(context).locationPointDao().getLocationPoint(id)
+        }.await()
+    }
+
     suspend fun getAllLocationPointsForCountry(countryName: String): List<LocationPoint>? {
         return GlobalScope.async {
             getDatabase(context).locationPointDao().getLocationPointsOfCountry(countryName.trim())
