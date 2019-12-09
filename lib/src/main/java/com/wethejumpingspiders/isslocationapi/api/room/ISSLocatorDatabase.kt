@@ -20,7 +20,7 @@ abstract class ISSLocatorDatabase : RoomDatabase() {
 
 val databaseName : String = "ISSLocator"
 
-fun getDatabase(context: Context) : ISSLocatorDatabase {
+suspend fun getDatabase(context: Context) : ISSLocatorDatabase {
     database = database ?: Room.databaseBuilder(
         context,
         ISSLocatorDatabase::class.java, databaseName

@@ -12,32 +12,23 @@ import kotlinx.coroutines.launch
 class LocationPointsDatabaseHelper(val context: Context) {
 
     suspend fun addAllLocationPoints(locationPoints: List<LocationPoint>) {
-        GlobalScope.launch {
             getDatabase(context).locationPointDao().insertAll(locationPoints)
-        }
     }
 
     suspend fun getAllLocationPoints(): List<LocationPoint>? {
-        return GlobalScope.async{
-            getDatabase(context).locationPointDao().getAll()
-        }.await()
+        return getDatabase(context).locationPointDao().getAll()
     }
 
     suspend fun getLocationPoint(id : Int): LocationPoint? {
-        return GlobalScope.async{
-            getDatabase(context).locationPointDao().getLocationPoint(id)
-        }.await()
+        return getDatabase(context).locationPointDao().getLocationPoint(id)
     }
 
     suspend fun getAllLocationPointsForCountry(countryName: String): List<LocationPoint>? {
-        return GlobalScope.async {
-            getDatabase(context).locationPointDao().getLocationPointsOfCountry(countryName.trim())
-        }.await()
+        return getDatabase(context).locationPointDao().getLocationPointsOfCountry(countryName.trim())
+
     }
 
-    fun deleteAllLocationPoints() {
-        GlobalScope.launch {
+    suspend fun deleteAllLocationPoints() {
             getDatabase(context).locationPointDao().deleteAll()
-        }
     }
 }

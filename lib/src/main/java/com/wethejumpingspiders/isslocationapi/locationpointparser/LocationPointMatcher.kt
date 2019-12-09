@@ -65,8 +65,9 @@ class LocationPointMatcher(val context: Context, val databaseHelper: LocationPoi
         distanceArray: List<Double>?,
         locationPoints: List<LocationPoint>?
     ): LocationPoint? {
-        val minValueIndex = distanceArray?.indexOf(distanceArray.min())
-        return locationPoints?.get(minValueIndex ?: 0)
+        if(distanceArray.isNullOrEmpty() || locationPoints.isNullOrEmpty()) return null
+        val minValueIndex = distanceArray.indexOf(distanceArray.min())
+        return locationPoints.get(minValueIndex)
     }
 
 

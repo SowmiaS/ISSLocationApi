@@ -56,7 +56,7 @@ class ISSLocator(val context: Context) : ISSLocatorInterface {
     override suspend fun intialise() {
         System.out.println("errr ...1")
         val locationPoints = locationPointManager.getAllLocationPoints()
-        if (locationPoints == null || locationPoints.size ==0) {
+        if (locationPoints.isNullOrEmpty()) {
             System.out.println("errr ...2")
             locationPointManager.syncLocationPoints()
         }

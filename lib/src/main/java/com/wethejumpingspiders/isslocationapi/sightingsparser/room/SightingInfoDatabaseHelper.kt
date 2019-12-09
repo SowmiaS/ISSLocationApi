@@ -13,12 +13,11 @@ class SightingInfoDatabaseHelper(val context: Context) {
 
 
     suspend fun addAllSightingInfos(sightingInfos: List<SightingInfo>) {
-        GlobalScope.launch {
-            getDatabase(context).sightingInfoDao().insertAll(sightingInfos)
-        }
+        return getDatabase(context).sightingInfoDao().insertAll(sightingInfos)
+
     }
 
     suspend fun getSightingInfosForLocation(locationId: Int): List<SightingInfo>? {
-        return GlobalScope.async { getDatabase(context).sightingInfoDao().getSightingInfosOfLocationPoint(locationId) }.await()
+        return getDatabase(context).sightingInfoDao().getSightingInfosOfLocationPoint(locationId)
     }
 }

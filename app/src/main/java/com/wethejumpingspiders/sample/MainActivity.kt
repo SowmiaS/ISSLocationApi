@@ -14,10 +14,7 @@ import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPointP
 import com.wethejumpingspiders.isslocationapi.sightingsparser.ISSSightingDataParser
 import com.wethejumpingspiders.isslocationapi.sightingsparser.SightingInfo
 import kotlinx.android.synthetic.main.activity_main.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,41 +28,42 @@ class MainActivity : AppCompatActivity() {
 
         progress.visibility = View.VISIBLE
         val locator = ISSLocator(applicationContext)
-        GlobalScope.launch(Dispatchers.Main) {
+        GlobalScope.launch(Dispatchers.IO) {
             locator.intialise()
-            val locationPoints = async { locator.getAllLocationPoints() }
-            locationPoints.await()?.get(0)?.country
-            Toast.makeText(applicationContext, "Number of Location Points ", Toast.LENGTH_LONG).show()
-
-
-            val matchedLocationPoint = async { locator.getMatchedLocationPoint(11.0168f, 76.9558f) }
-            matchedLPTextview.setText(matchedLocationPoint.await()?.city)
+            val locationPoints = locator.getAllLocationPoints()
+            locationPoints?.get(0)?.country
+            withContext(Dispatchers.Main){ Toast.makeText(applicationContext, "Number of Location Points ", Toast.LENGTH_LONG).show() }
+            val matchedLocationPoint = locator.getMatchedLocationPoint(11.0168f, 76.9558f)
+            withContext(Dispatchers.Main){matchedLPTextview.setText(matchedLocationPoint?.city)}
 
             val sightingInfos: List<SightingInfo>? =
-                async { matchedLocationPoint.await()?.let { locator.getSightingInformation(it) } }.await()
+                matchedLocationPoint?.let { locator.getSightingInformation(it) }
+            withContext(Dispatchers.Main){ Toast.makeText(applicationContext, " no of sightings ${sightingInfos?.size}", Toast.LENGTH_LONG).show() }
+
             if (sightingInfos == null) {
-                System.out.println("Error retriving SIGHTING INFO...")
+                withContext(Dispatchers.Main){ Toast.makeText(applicationContext, "Error retriving SIGHTING INFO...", Toast.LENGTH_LONG).show() }
+                Log.d("TAG","Error retriving SIGHTING INFO...")
             } else if (sightingInfos.isEmpty()) {
-                System.out.println("NO SIGHTING INFO...")
+                withContext(Dispatchers.Main){ Toast.makeText(applicationContext, "NO SIGHTING INFO...", Toast.LENGTH_LONG).show() }
+                Log.d("TAG","NO SIGHTING INFO...")
             }else {
-                sightingInfos?.let {
-                    for (sightingInfo in it) {
-                        System.out.println(sightingInfo)
-                        System.out.println("A APPEARS ${sightingInfo.getApproachData().degree} ,${sightingInfo.getApproachData().direction} , ${sightingInfo.getApproachData().string}")
-                        System.out.println("A DISAAPPEARS ${sightingInfo.getDepartureData().degree} ,${sightingInfo.getDepartureData().direction} , ${sightingInfo.getDepartureData().string}")
-                        System.out.println("A MAX ELEVATION ${sightingInfo.maxElevation}")
+
+                    for (sightingInfo in sightingInfos) {
+                        withContext(Dispatchers.Main){ Toast.makeText(applicationContext, "${sightingInfo}", Toast.LENGTH_LONG).show() }
+                        Log.d("TAG","$sightingInfo")
+                        Log.d("TAG","A APPEARS ${sightingInfo.getApproachData().degree} ,${sightingInfo.getApproachData().direction} , ${sightingInfo.getApproachData().string}")
+                        Log.d("TAG","A DISAAPPEARS ${sightingInfo.getDepartureData().degree} ,${sightingInfo.getDepartureData().direction} , ${sightingInfo.getDepartureData().string}")
+                        Log.d("TAG","A MAX ELEVATION ${sightingInfo.maxElevation}")
                     }
-                }
+                val location = sightingInfos?.get(0)?.let { locator.getLocationForSighting(it) }
+                Log.d("TAG","A APPEARS $location")
+                withContext(Dispatchers.Main){ Toast.makeText(applicationContext, "$location", Toast.LENGTH_LONG).show() }
             }
-            val location = async { sightingInfos?.get(0)?.let { locator.getLocationForSighting(it) } }.await()
-            System.out.println("A APPEARS $location")
         }
-
-
     }
 
     suspend fun ISSLocator.getLocationForSighting(info : SightingInfo) : String{
-        val locationPoint = getLocationPoint(info.id)
+        val locationPoint = getLocationPoint(info.locationPointId)
         return "${locationPoint?.city}, ${locationPoint?.country}"
     }
 

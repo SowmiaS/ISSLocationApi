@@ -23,13 +23,13 @@ class LocationPointParser {
 
 
 
-    suspend fun parseLocationPoints(input: String): List<LocationPoint>  {
+    suspend fun parseLocationPoints(input: String?): List<LocationPoint>?  {
+        if(input == null ) return null
         return GlobalScope.async { input.trim().removePrefix(prefix).removeSuffix(suffix).split(delimeter)
             .map { it -> getLocationPoint(it.trim()) }}.await()
     }
 
     private fun getLocationPoint(text: String): LocationPoint {
-        System.out.println(text)
         val regex = getRegexString().toRegex()
         return regex.matchEntire(text)
             ?.destructured

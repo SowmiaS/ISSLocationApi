@@ -4,6 +4,7 @@ import android.content.Context
 import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 import com.wethejumpingspiders.isslocationapi.sightingsparser.room.SightingInfoDatabaseHelper
 import java.util.*
+import kotlin.collections.ArrayList
 
 interface SightingInfoManagerInterface {
 
@@ -25,7 +26,6 @@ interface OnSightingInfoResponse {
      */
     fun onFailure(errorMsg: String)
 }
-
 class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
 
     val databaseHelper = SightingInfoDatabaseHelper(context)
@@ -44,14 +44,14 @@ class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
     }
 
 
-    suspend fun getSightingInfos(locationPoint: LocationPoint): List<SightingInfo>? {
+    private suspend fun getSightingInfos(locationPoint: LocationPoint): List<SightingInfo>? {
 
         val sightingInfoDescList = downloader.getSightingsDesc(locationPoint)
-        if (sightingInfoDescList == null ) return null;
+        if (sightingInfoDescList == null)  return null
+        else if (sightingInfoDescList.isEmpty()) return ArrayList<SightingInfo>()
         else {
             return parser.parseSightingInfos(locationPoint, sightingInfoDescList)
         }
-
-
     }
+
 }

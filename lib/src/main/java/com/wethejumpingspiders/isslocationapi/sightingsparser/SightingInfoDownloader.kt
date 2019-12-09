@@ -15,19 +15,26 @@ class SightingInfoDownloader {
         val retrofit = Retrofit.Builder().baseUrl(RSSFEEDURL)
             .addConverterFactory(SimpleXmlConverterFactory.create())
             .build()
-        val rssapi = retrofit.create(SightingRSSService::class.java)
-        val feedResponse = rssapi.getFeed(locationPoint.country, locationPoint.region, locationPoint.city)
 
-        if (feedResponse.body() == null) return null;
-        else {
-            val sightingList = ArrayList<String>();
-            feedResponse.body()?.mChannel?.sightingItems?.forEach { item ->
-                Log.d("RSSFEED", item.description)
-                item.description?.let { sightingList.add(it) }
+        try{
+            val rssapi = retrofit.create(SightingRSSService::class.java)
+            val feedResponse = rssapi.getFeed(locationPoint.country, locationPoint.region, locationPoint.city)
 
+            if (feedResponse.body() == null) return null;
+            else {
+                val sightingList = ArrayList<String>();
+                feedResponse.body()?.mChannel?.sightingItems?.forEach { item ->
+                    Log.d("RSSFEED", item.description)
+                    item.description?.let { sightingList.add(it) }
+
+                }
+                return sightingList
             }
-            return sightingList
         }
+        catch (e : Exception){
+            return null
+        }
+
     }
 
 

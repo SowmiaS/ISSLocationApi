@@ -14,7 +14,7 @@ import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 )
 data class SightingInfo(
     @PrimaryKey(autoGenerate = true)
-    val id:Int = 0,
+    val id: Int = 0,
     val date: String, val time: String, val duration: String, val maxElevation: String,
     val approach: String, val departure: String, val locationPointId: Int) {
 

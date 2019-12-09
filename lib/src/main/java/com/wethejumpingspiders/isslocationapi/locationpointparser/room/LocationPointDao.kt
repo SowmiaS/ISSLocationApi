@@ -10,22 +10,22 @@ import com.wethejumpingspiders.isslocationapi.locationpointparser.LocationPoint
 interface LocationPointDao {
 
     @Query("SELECT * FROM locationpoint")
-    fun getAll(): List<LocationPoint>
+    suspend fun getAll(): List<LocationPoint>
 
 
     @Query("SELECT * FROM locationpoint WHERE country = :countryName" )
-    fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
+    suspend fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
 
     @Query("SELECT * FROM locationpoint WHERE id = :id" )
-    fun getLocationPoint(id : Int): LocationPoint?
+    suspend fun getLocationPoint(id : Int): LocationPoint?
 
     @Insert
-     fun insertAll(locationPoint: List<LocationPoint>)
+     suspend fun insertAll(locationPoint: List<LocationPoint>)
 
     @Delete
-     fun delete(locationPoint: LocationPoint)
+     suspend fun delete(locationPoint: LocationPoint)
 
     @Query("DELETE FROM locationpoint")
-     fun deleteAll()
+     suspend fun deleteAll()
 
 }

@@ -15,15 +15,19 @@ class LocationPointDownloader {
 
     val LOCATION_POINT_URL = "https://spotthestation.nasa.gov/js/"
 
-    suspend fun getLocationPointsJS(): String {
+    suspend fun getLocationPointsJS(): String? {
             val retrofit = Retrofit.Builder().baseUrl(LOCATION_POINT_URL)
                 .build()
+        try{
             val rssapi = retrofit.create(LocationPointJSService::class.java)
             val response = rssapi.getLocationPoints()
-            if (response.isSuccessful) {
-                return response.body()?.string()!!
+            if (response.body() == null || !response.isSuccessful) return null;
+            else {
+                return response.body()?.string()
             }
-            throw Exception("Server error" + response.errorBody()?.string())
+        }catch (e : Exception){
+            return null
         }
+    }
 }
 

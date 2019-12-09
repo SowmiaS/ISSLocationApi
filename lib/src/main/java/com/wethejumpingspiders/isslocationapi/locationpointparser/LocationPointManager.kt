@@ -32,12 +32,13 @@ class LocationPointManager(val context: Context) : LocationPointManagerInterface
 
 
     override suspend fun syncLocationPoints(){
-        System.out.println("errr ...4")
         val locationPointsJSString = downloader.getLocationPointsJS()
         val locationPointsList = parser.parseLocationPoints(locationPointsJSString)
-        databaseHelper.deleteAllLocationPoints()
-        databaseHelper.addAllLocationPoints(locationPointsList)
-        System.out.println("errr ...5")    }
+        locationPointsList?.let {
+            databaseHelper.deleteAllLocationPoints()
+            databaseHelper.addAllLocationPoints(locationPointsList)
+        }
+    }
 
     override suspend fun storeLocationPointsInRoom(locationPoints: List<LocationPoint>) {
         databaseHelper.addAllLocationPoints(locationPoints)
