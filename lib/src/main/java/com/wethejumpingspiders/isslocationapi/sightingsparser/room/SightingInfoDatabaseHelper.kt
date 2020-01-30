@@ -20,4 +20,8 @@ class SightingInfoDatabaseHelper(val context: Context) {
     suspend fun getSightingInfosForLocation(locationId: Int): List<SightingInfo>? {
         return getDatabase(context).sightingInfoDao().getSightingInfosOfLocationPoint(locationId)
     }
+
+    suspend fun deleteAllSightings() {
+        return getDatabase(context).sightingInfoDao().deleteAll()
+    }
 }

@@ -8,7 +8,7 @@ import kotlin.collections.ArrayList
 
 interface SightingInfoManagerInterface {
 
-    suspend fun getSightingInfo(locationPoint: LocationPoint ) :List<SightingInfo>?
+    suspend fun getSightingInfo(locationPoint: LocationPoint): List<SightingInfo>?
 
 }
 
@@ -19,13 +19,14 @@ interface OnSightingInfoResponse {
     /**
      * This method is called when sighting information is retrieved or modified
      */
-     fun onSightingInfoChanged(sightingInfos: List<SightingInfo>)
+    fun onSightingInfoChanged(sightingInfos: List<SightingInfo>)
 
     /**
      * This method is called when any failure occurs.
      */
     fun onFailure(errorMsg: String)
 }
+
 class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
 
     val databaseHelper = SightingInfoDatabaseHelper(context)
@@ -33,21 +34,20 @@ class SightingInfoManager(val context: Context) : SightingInfoManagerInterface {
     val downloader = SightingInfoDownloader()
 
 
-    override suspend fun getSightingInfo(locationPoint: LocationPoint) : List<SightingInfo>? {
-
-        var sightingInfos = databaseHelper.getSightingInfosForLocation(locationPoint.id)
-        if ( sightingInfos == null || sightingInfos.size == 0 ){
-            sightingInfos = getSightingInfos(locationPoint)
-            sightingInfos?.let { databaseHelper.addAllSightingInfos(sightingInfos) }
+    override suspend fun getSightingInfo(locationPoint: LocationPoint): List<SightingInfo>? {
+        var sightingInfos = getSightingInfos(locationPoint)
+        sightingInfos?.let {
+            databaseHelper.deleteAllSightings()
+            databaseHelper.addAllSightingInfos(sightingInfos)
         }
-        return sightingInfos
+        return databaseHelper.getSightingInfosForLocation(locationPoint.id)
     }
 
 
     private suspend fun getSightingInfos(locationPoint: LocationPoint): List<SightingInfo>? {
 
         val sightingInfoDescList = downloader.getSightingsDesc(locationPoint)
-        if (sightingInfoDescList == null)  return null
+        if (sightingInfoDescList == null) return null
         else if (sightingInfoDescList.isEmpty()) return ArrayList<SightingInfo>()
         else {
             return parser.parseSightingInfos(locationPoint, sightingInfoDescList)

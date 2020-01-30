@@ -25,7 +25,7 @@ class ISSSightingDataParser() {
             val maxElevation = desc.get(3).trim().removePrefix("Maximum Elevation:")
             val approach = desc.get(4).trim().removePrefix("Approach:")
             val departure = desc.get(5).trim().removePrefix("Departure:")
-            val sightingInfo = SightingInfo(0,date, time, duration, maxElevation, approach, departure,locationPoint.id)
+            val sightingInfo = SightingInfo(date, time, duration, maxElevation, approach, departure,locationPoint.id)
             sightingInfoList.add(sightingInfo)
         }
         return sightingInfoList

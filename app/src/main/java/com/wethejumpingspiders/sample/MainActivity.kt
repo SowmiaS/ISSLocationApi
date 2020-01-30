@@ -32,8 +32,9 @@ class MainActivity : AppCompatActivity() {
             locator.intialise()
             val locationPoints = locator.getAllLocationPoints()
             locationPoints?.get(0)?.country
+
             withContext(Dispatchers.Main){ Toast.makeText(applicationContext, "Number of Location Points ", Toast.LENGTH_LONG).show() }
-            val matchedLocationPoint = locator.getMatchedLocationPoint(11.0168f, 76.9558f)
+            val matchedLocationPoint = locator.getMatchedLocationPoint(0.2280f,15.8277f)
             withContext(Dispatchers.Main){matchedLPTextview.setText(matchedLocationPoint?.city)}
 
             val sightingInfos: List<SightingInfo>? =
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                     for (sightingInfo in sightingInfos) {
                         withContext(Dispatchers.Main){ Toast.makeText(applicationContext, "${sightingInfo}", Toast.LENGTH_LONG).show() }
                         Log.d("TAG","$sightingInfo")
+
                         Log.d("TAG","A APPEARS ${sightingInfo.getApproachData().degree} ,${sightingInfo.getApproachData().direction} , ${sightingInfo.getApproachData().string}")
                         Log.d("TAG","A DISAAPPEARS ${sightingInfo.getDepartureData().degree} ,${sightingInfo.getDepartureData().direction} , ${sightingInfo.getDepartureData().string}")
                         Log.d("TAG","A MAX ELEVATION ${sightingInfo.maxElevation}")

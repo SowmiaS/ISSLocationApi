@@ -24,7 +24,7 @@ class LocationPointsDatabaseHelper(val context: Context) {
     }
 
     suspend fun getAllLocationPointsForCountry(countryName: String): List<LocationPoint>? {
-        return getDatabase(context).locationPointDao().getLocationPointsOfCountry(countryName.trim())
+        return getDatabase(context).locationPointDao().getLocationPointsOfCountry(countryName.trim(),countryName.trim().replace(" ","_"))
 
     }
 

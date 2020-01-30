@@ -13,8 +13,8 @@ interface LocationPointDao {
     suspend fun getAll(): List<LocationPoint>
 
 
-    @Query("SELECT * FROM locationpoint WHERE country = :countryName" )
-    suspend fun getLocationPointsOfCountry(countryName : String): List<LocationPoint>
+    @Query("SELECT * FROM locationpoint WHERE country = :countryName OR country = :countryNameWithUnderScore" )
+    suspend fun getLocationPointsOfCountry(countryName : String, countryNameWithUnderScore: String ): List<LocationPoint>
 
     @Query("SELECT * FROM locationpoint WHERE id = :id" )
     suspend fun getLocationPoint(id : Int): LocationPoint?

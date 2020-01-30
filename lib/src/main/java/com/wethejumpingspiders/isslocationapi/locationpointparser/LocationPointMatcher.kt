@@ -12,7 +12,10 @@ class LocationPointMatcher(val context: Context, val databaseHelper: LocationPoi
 
     suspend fun getClosestLocationPoint(latitude: Float, longitude: Float): LocationPoint? {
         val countryName = getCountryName(latitude, longitude)
-        val locationPointsList: List<LocationPoint>? = getLocationPointsForCountry(countryName)
+        var locationPointsList: List<LocationPoint>? = getLocationPointsForCountry(countryName)
+        if(locationPointsList.isNullOrEmpty()){ //When no LP for specific country, all LP are retrieved.
+            locationPointsList  = getAllLocationPoints()
+        }
         val distanceArray = mapDistance(latitude, longitude, locationPointsList)
         return findClosestLocationPoint(distanceArray, locationPointsList)
     }
@@ -43,6 +46,10 @@ class LocationPointMatcher(val context: Context, val databaseHelper: LocationPoi
 
     private suspend fun getLocationPointsForCountry(countryName: String): List<LocationPoint>? {
         return databaseHelper.getAllLocationPointsForCountry(countryName)
+    }
+
+    private suspend fun getAllLocationPoints(): List<LocationPoint>? {
+        return databaseHelper.getAllLocationPoints()
     }
 
     private fun mapDistance(latitude: Float, longitude: Float, locationPoints: List<LocationPoint>?): List<Double>? {
